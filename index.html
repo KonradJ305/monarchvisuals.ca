@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Konrad Jozwiak — Visual Photographer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Neue+Haas+Grotesk+Display+Pro:wght@400;500&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #080808;
+      --white: #f0ede6;
+      --cream: #e8e3d9;
+      --accent: #c8a96e;
+      --gray: #3a3a3a;
+      --mid: #999;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+    /* CUSTOM CURSOR */
+    .cursor {
+      position: fixed;
+      width: 10px; height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease, width 0.2s ease, height 0.2s ease, background 0.2s ease;
+      mix-blend-mode: difference;
+    }
+    .cursor-ring {
+      position: fixed;
+      width: 36px; height: 36px;
+      border: 1px solid var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s ease, width 0.3s ease, height 0.3s ease, opacity 0.2s ease;
+      opacity: 0.6;
+    }
+    body:hover .cursor { opacity: 1; }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 48px;
+      mix-blend-mode: normal;
+    }
+    nav::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(8,8,8,0.95) 0%, transparent 100%);
+      pointer-events: none;
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--white);
+      text-decoration: none;
+      position: relative;
+      z-index: 1;
+    }
+    .nav-logo span { color: var(--accent); font-style: italic; }
+    .nav-links {
+      display: flex;
+      gap: 40px;
+      list-style: none;
+      position: relative;
+      z-index: 1;
+    }
+    .nav-links a {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mid);
+      text-decoration: none;
+      transition: color 0.2s ease;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0; height: 1px;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 48px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: 
+        radial-gradient(ellipse at 70% 40%, rgba(200,169,110,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse at 20% 80%, rgba(200,169,110,0.04) 0%, transparent 50%);
+    }
+    .hero-noise {
+      position: absolute;
+      inset: 0;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size: 200px;
+    }
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
+      animation: fadeUp 1s ease 0.2s both;
+    }
+    .hero-headline {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(64px, 9vw, 140px);
+      font-weight: 900;
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+      margin-bottom: 48px;
+      max-width: 900px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-headline .line { overflow: hidden; display: block; }
+    .hero-headline .line span {
+      display: block;
+      animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .hero-headline .line:nth-child(1) span { animation-delay: 0.3s; }
+    .hero-headline .line:nth-child(2) span { animation-delay: 0.45s; }
+    .hero-headline .line:nth-child(3) span { animation-delay: 0.6s; }
+    .hero-headline em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .hero-headline .outline {
+      -webkit-text-stroke: 1px rgba(240,237,230,0.3);
+      color: transparent;
+    }
+    .hero-sub {
+      display: flex;
+      align-items: center;
+      gap: 48px;
+      animation: fadeUp 1s ease 0.9s both;
+    }
+    .hero-sub p {
+      font-size: 13px;
+      color: var(--mid);
+      line-height: 1.7;
+      max-width: 360px;
+    }
+    .hero-sub .scroll-hint {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--mid);
+      writing-mode: vertical-rl;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .hero-sub .scroll-hint::before {
+      content: '';
+      width: 1px;
+      height: 60px;
+      background: linear-gradient(to bottom, transparent, var(--accent));
+      animation: growLine 1.5s ease 1.5s both;
+    }
+    .hero-number {
+      position: absolute;
+      right: 48px;
+      bottom: 80px;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: var(--gray);
+      z-index: 1;
+      animation: fadeUp 1s ease 1s both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideUp {
+      from { transform: translateY(110%); }
+      to { transform: translateY(0); }
+    }
+    @keyframes growLine {
+      from { transform: scaleY(0); transform-origin: top; }
+      to { transform: scaleY(1); }
+    }
+
+    /* MARQUEE */
+    .marquee-wrap {
+      padding: 28px 0;
+      border-top: 1px solid var(--gray);
+      border-bottom: 1px solid var(--gray);
+      overflow: hidden;
+      background: var(--black);
+    }
+    .marquee-track {
+      display: flex;
+      gap: 0;
+      animation: marquee 18s linear infinite;
+      white-space: nowrap;
+    }
+    .marquee-track span {
+      font-family: 'Playfair Display', serif;
+      font-size: 15px;
+      font-style: italic;
+      letter-spacing: 0.04em;
+      color: var(--mid);
+      padding: 0 40px;
+    }
+    .marquee-track span.sep {
+      color: var(--accent);
+      font-style: normal;
+      padding: 0 8px;
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* FEATURED WORK SECTION */
+    .section {
+      padding: 120px 48px;
+    }
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 64px;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(36px, 5vw, 72px);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .section-title em { font-style: italic; color: var(--accent); }
+    .section-link {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--mid);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: color 0.2s ease;
+    }
+    .section-link:hover { color: var(--white); }
+    .section-link::after {
+      content: '→';
+      transition: transform 0.2s ease;
+    }
+    .section-link:hover::after { transform: translateX(4px); }
+
+    /* PORTFOLIO GRID */
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+    .portfolio-item {
+      position: relative;
+      overflow: hidden;
+      background: var(--gray);
+      cursor: none;
+    }
+    .portfolio-item:nth-child(1) { grid-column: span 7; grid-row: span 2; }
+    .portfolio-item:nth-child(2) { grid-column: span 5; }
+    .portfolio-item:nth-child(3) { grid-column: span 5; }
+    .portfolio-item:nth-child(4) { grid-column: span 4; }
+    .portfolio-item:nth-child(5) { grid-column: span 4; }
+    .portfolio-item:nth-child(6) { grid-column: span 4; }
+
+    .portfolio-item .img-wrap {
+      width: 100%;
+      padding-bottom: 75%;
+      position: relative;
+      overflow: hidden;
+    }
+    .portfolio-item:nth-child(1) .img-wrap { padding-bottom: 120%; }
+    .portfolio-item:nth-child(2) .img-wrap,
+    .portfolio-item:nth-child(3) .img-wrap { padding-bottom: 65%; }
+
+    .portfolio-item .img-placeholder {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .portfolio-item:hover .img-placeholder { transform: scale(1.04); }
+
+    .portfolio-item .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(8,8,8,0.85) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      display: flex;
+      align-items: flex-end;
+      padding: 24px;
+    }
+    .portfolio-item:hover .overlay { opacity: 1; }
+    .overlay-content .tag {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .overlay-content .title {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    /* Decorative placeholder visuals */
+    .placeholder-visual {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      inset: 0;
+    }
+    .ph-realtor { background: linear-gradient(135deg, #1c1812 0%, #2d2318 50%, #1a1510 100%); }
+    .ph-car { background: linear-gradient(135deg, #0d0d12 0%, #1a1a24 50%, #0a0a0f 100%); }
+    .ph-gym { background: linear-gradient(135deg, #0a0a0a 0%, #1a1212 50%, #0d0a0a 100%); }
+
+    .ph-text {
+      position: absolute;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(48px, 8vw, 100px);
+      font-weight: 900;
+      font-style: italic;
+      opacity: 0.06;
+      color: var(--white);
+      letter-spacing: -0.04em;
+      white-space: nowrap;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* ABOUT SECTION */
+    .about-section {
+      padding: 120px 48px;
+      border-top: 1px solid var(--gray);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .about-label {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 32px;
+    }
+    .about-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(40px, 5vw, 72px);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      margin-bottom: 32px;
+    }
+    .about-title em { font-style: italic; color: var(--accent); }
+    .about-body {
+      color: var(--mid);
+      line-height: 1.8;
+      font-size: 13px;
+      margin-bottom: 48px;
+    }
+    .about-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      padding-top: 48px;
+      border-top: 1px solid var(--gray);
+    }
+    .stat-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 48px;
+      font-weight: 900;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .stat-label {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--mid);
+    }
+    .about-img-side {
+      position: relative;
+    }
+    .about-img-frame {
+      width: 100%;
+      aspect-ratio: 3/4;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .about-img-frame::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border: 1px solid var(--accent);
+      opacity: 0.3;
+      z-index: 1;
+    }
+    .about-img-frame .ph-text { opacity: 0.04; }
+    .about-corner {
+      position: absolute;
+      bottom: -24px;
+      right: -24px;
+      width: 160px;
+      height: 160px;
+      border: 1px solid var(--accent);
+      opacity: 0.15;
+    }
+
+    /* SPECIALTIES */
+    .specialties-section {
+      padding: 80px 48px;
+      border-top: 1px solid var(--gray);
+    }
+    .specialties-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--gray);
+      margin-top: 64px;
+    }
+    .specialty-card {
+      background: var(--black);
+      padding: 48px 40px;
+      transition: background 0.3s ease;
+    }
+    .specialty-card:hover { background: #111; }
+    .specialty-num {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 28px;
+    }
+    .specialty-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      line-height: 1.1;
+    }
+    .specialty-name em { font-style: italic; color: var(--accent); }
+    .specialty-desc {
+      font-size: 12px;
+      color: var(--mid);
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+    .specialty-link {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--mid);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.2s ease;
+    }
+    .specialty-link:hover { color: var(--accent); }
+    .specialty-link span { transition: transform 0.2s ease; }
+    .specialty-link:hover span { transform: translateX(4px); }
+
+    /* CTA */
+    .cta-section {
+      padding: 140px 48px;
+      border-top: 1px solid var(--gray);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 50%, rgba(200,169,110,0.05) 0%, transparent 70%);
+    }
+    .cta-section .big-text {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(56px, 10vw, 160px);
+      font-weight: 900;
+      line-height: 0.9;
+      letter-spacing: -0.03em;
+      margin-bottom: 48px;
+      position: relative;
+      z-index: 1;
+    }
+    .cta-section .big-text em { font-style: italic; color: var(--accent); display: block; }
+    .cta-section .big-text .outline {
+      -webkit-text-stroke: 1px rgba(240,237,230,0.2);
+      color: transparent;
+    }
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      text-decoration: none;
+      padding: 18px 40px;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-family: 'Space Mono', monospace;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+    .cta-btn:hover {
+      background: var(--accent);
+      color: var(--black);
+    }
+    .cta-sub {
+      margin-top: 28px;
+      font-size: 12px;
+      color: var(--gray);
+      position: relative;
+      z-index: 1;
+      letter-spacing: 0.05em;
+    }
+
+    /* FOOTER */
+    footer {
+      padding: 48px;
+      border-top: 1px solid var(--gray);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--white);
+    }
+    .footer-logo span { color: var(--accent); font-style: italic; }
+    .footer-copy {
+      font-size: 11px;
+      color: var(--gray);
+      letter-spacing: 0.06em;
+    }
+    .footer-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+    .footer-links a {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--accent); }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      nav { padding: 20px 24px; }
+      .nav-links { gap: 20px; }
+      .hero, .section, .about-section, .specialties-section, .cta-section, footer { padding-left: 24px; padding-right: 24px; }
+      .portfolio-item:nth-child(1) { grid-column: span 12; }
+      .portfolio-item:nth-child(2), .portfolio-item:nth-child(3) { grid-column: span 12; }
+      .portfolio-item:nth-child(4), .portfolio-item:nth-child(5), .portfolio-item:nth-child(6) { grid-column: span 12; }
+      .about-section { grid-template-columns: 1fr; }
+      .about-img-side { display: none; }
+      .specialties-grid { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 24px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CURSOR -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- NAV -->
+  <nav>
+    <a href="index.html" class="nav-logo">Konrad <span>Jozwiak</span></a>
+    <ul class="nav-links">
+      <li><a href="realtor.html">Realtor</a></li>
+      <li><a href="cars.html">Cars</a></li>
+      <li><a href="gym.html">Gym</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-noise"></div>
+    <p class="hero-eyebrow">Visual Photographer · GTA, Ontario</p>
+    <h1 class="hero-headline">
+      <span class="line"><span>Capturing</span></span>
+      <span class="line"><span><em>Moments</em></span></span>
+      <span class="line"><span class="outline">That Sell.</span></span>
+    </h1>
+    <div class="hero-sub">
+      <p>Realtor. Automotive. Fitness. I make spaces, machines, and bodies look like they were meant to be seen.</p>
+      <div class="scroll-hint">Scroll</div>
+    </div>
+    <div class="hero-number">Based in GTA &nbsp;/&nbsp; 2024</div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span>Real Estate Photography</span><span class="sep">✦</span>
+      <span>Automotive Shoots</span><span class="sep">✦</span>
+      <span>Gym & Fitness</span><span class="sep">✦</span>
+      <span>GTA & Toronto</span><span class="sep">✦</span>
+      <span>Commercial</span><span class="sep">✦</span>
+      <span>Editorial</span><span class="sep">✦</span>
+      <span>Real Estate Photography</span><span class="sep">✦</span>
+      <span>Automotive Shoots</span><span class="sep">✦</span>
+      <span>Gym & Fitness</span><span class="sep">✦</span>
+      <span>GTA & Toronto</span><span class="sep">✦</span>
+      <span>Commercial</span><span class="sep">✦</span>
+      <span>Editorial</span><span class="sep">✦</span>
+    </div>
+  </div>
+
+  <!-- PORTFOLIO PREVIEW -->
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Selected<br><em>Work</em></h2>
+      <a href="realtor.html" class="section-link">View all work</a>
+    </div>
+    <div class="portfolio-grid">
+      <!-- Item 1 — Large Feature -->
+      <div class="portfolio-item">
+        <div class="img-wrap">
+          <div class="img-placeholder ph-realtor">
+            <div class="ph-text">Realtor</div>
+          </div>
+          <div class="overlay">
+            <div class="overlay-content">
+              <div class="tag">Realtor · Listing</div>
+              <div class="title">Luxury Listings</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Item 2 -->
+      <div class="portfolio-item">
+        <div class="img-wrap">
+          <div class="img-placeholder ph-car">
+            <div class="ph-text">Auto</div>
+          </div>
+          <div class="overlay">
+            <div class="overlay-content">
+              <div class="tag">Automotive</div>
+              <div class="title">High-End Detail</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Item 3 -->
+      <div class="portfolio-item">
+        <div class="img-wrap">
+          <div class="img-placeholder ph-gym">
+            <div class="ph-text">Gym</div>
+          </div>
+          <div class="overlay">
+            <div class="overlay-content">
+              <div class="tag">Fitness · Editorial</div>
+              <div class="title">Performance</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Items 4-6 -->
+      <div class="portfolio-item">
+        <div class="img-wrap">
+          <div class="img-placeholder ph-realtor">
+            <div class="ph-text">Space</div>
+          </div>
+          <div class="overlay">
+            <div class="overlay-content">
+              <div class="tag">Realtor</div>
+              <div class="title">Interiors</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="portfolio-item">
+        <div class="img-wrap">
+          <div class="img-placeholder ph-car">
+            <div class="ph-text">Speed</div>
+          </div>
+          <div class="overlay">
+            <div class="overlay-content">
+              <div class="tag">Automotive</div>
+              <div class="title">In Motion</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="portfolio-item">
+        <div class="img-wrap">
+          <div class="img-placeholder ph-gym">
+            <div class="ph-text">Body</div>
+          </div>
+          <div class="overlay">
+            <div class="overlay-content">
+              <div class="tag">Fitness</div>
+              <div class="title">Physique</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPECIALTIES -->
+  <section class="specialties-section">
+    <div class="section-header">
+      <h2 class="section-title">What I<br><em>Shoot</em></h2>
+    </div>
+    <div class="specialties-grid">
+      <div class="specialty-card">
+        <div class="specialty-num">01</div>
+        <div class="specialty-name">Real<br><em>Estate</em></div>
+        <p class="specialty-desc">From condo listings to luxury homes — I make properties look their absolute best. Interior, exterior, twilight shoots across the GTA.</p>
+        <a href="realtor.html" class="specialty-link">View Portfolio <span>→</span></a>
+      </div>
+      <div class="specialty-card">
+        <div class="specialty-num">02</div>
+        <div class="specialty-name">Auto<br><em>motive</em></div>
+        <p class="specialty-desc">Detail shots, lifestyle, dealership content. Whether it's a track day or a driveway detail, I shoot cars the way they deserve to be seen.</p>
+        <a href="cars.html" class="specialty-link">View Portfolio <span>→</span></a>
+      </div>
+      <div class="specialty-card">
+        <div class="specialty-num">03</div>
+        <div class="specialty-name">Gym &<br><em>Fitness</em></div>
+        <p class="specialty-desc">Athletes, trainers, gym brands. High-energy editorial and product content that captures strength, focus, and results.</p>
+        <a href="gym.html" class="specialty-link">View Portfolio <span>→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about-section" id="about">
+    <div class="about-text">
+      <p class="about-label">About Me</p>
+      <h2 class="about-title">Konrad<br><em>Jozwiak</em></h2>
+      <p class="about-body">
+        Based in the Greater Toronto Area, I'm a photographer specializing in real estate, automotive, and fitness content. I work with realtors, dealerships, gym brands, and athletes to produce imagery that converts — not just looks good.<br><br>
+        Every shoot is approached with intention. The right light, the right angle, the right moment. Nothing generic.
+      </p>
+      <div class="about-stats">
+        <div>
+          <div class="stat-number">3</div>
+          <div class="stat-label">Specialties</div>
+        </div>
+        <div>
+          <div class="stat-number">GTA</div>
+          <div class="stat-label">Based Here</div>
+        </div>
+        <div>
+          <div class="stat-number">∞</div>
+          <div class="stat-label">Details Matter</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-img-side">
+      <div class="about-img-frame">
+        <div class="ph-text">KJ</div>
+      </div>
+      <div class="about-corner"></div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section" id="contact">
+    <div class="cta-bg"></div>
+    <div class="big-text">
+      Let's
+      <em>work</em>
+      <span class="outline">together</span>
+    </div>
+    <a href="mailto:hello@konradjozwiak.com" class="cta-btn">Get In Touch →</a>
+    <p class="cta-sub">hello@konradjozwiak.com &nbsp;·&nbsp; GTA, Ontario</p>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">Konrad <span>Jozwiak</span></div>
+    <p class="footer-copy">© 2024 · All Rights Reserved</p>
+    <ul class="footer-links">
+      <li><a href="realtor.html">Realtor</a></li>
+      <li><a href="cars.html">Cars</a></li>
+      <li><a href="gym.html">Gym</a></li>
+    </ul>
+  </footer>
+
+  <script>
+    // Cursor
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    function animCursor() {
+      cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+      rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+      requestAnimationFrame(animCursor);
+    }
+    animCursor();
+    document.querySelectorAll('a, .portfolio-item').forEach(el => {
+      el.addEventListener('mouseenter', () => { cursor.style.width = '6px'; cursor.style.height = '6px'; ring.style.width = '56px'; ring.style.height = '56px'; });
+      el.addEventListener('mouseleave', () => { cursor.style.width = '10px'; cursor.style.height = '10px'; ring.style.width = '36px'; ring.style.height = '36px'; });
+    });
+
+    // Scroll reveal
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.style.opacity = '1'; e.target.style.transform = 'translateY(0)'; } });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.specialty-card, .about-text, .stat-number').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(30px)';
+      el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+      obs.observe(el);
+    });
+  </script>
+</body>
+</html>

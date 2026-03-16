@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Automotive Portfolio — Konrad Jozwiak</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --black: #080808; --white: #f0ede6; --accent: #c8a96e; --gray: #3a3a3a; --mid: #999; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--black); color: var(--white); font-family: 'Space Mono', monospace; font-size: 14px; cursor: none; overflow-x: hidden; }
+    .cursor { position: fixed; width: 10px; height: 10px; background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); mix-blend-mode: difference; }
+    .cursor-ring { position: fixed; width: 36px; height: 36px; border: 1px solid var(--accent); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%, -50%); opacity: 0.6; }
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 28px 48px; }
+    nav::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(8,8,8,0.95) 0%, transparent 100%); pointer-events: none; }
+    .nav-logo { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--white); text-decoration: none; position: relative; z-index: 1; }
+    .nav-logo span { color: var(--accent); font-style: italic; }
+    .nav-links { display: flex; gap: 40px; list-style: none; position: relative; z-index: 1; }
+    .nav-links a { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mid); text-decoration: none; transition: color 0.2s; position: relative; }
+    .nav-links a.active { color: var(--accent); }
+    .nav-links a::after { content: ''; position: absolute; bottom: -3px; left: 0; width: 0; height: 1px; background: var(--accent); transition: width 0.3s; }
+    .nav-links a:hover { color: var(--white); }
+    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+
+    /* HERO with dark blue-black tone for cars */
+    .page-hero {
+      padding: 200px 48px 100px;
+      position: relative;
+      border-bottom: 1px solid var(--gray);
+      overflow: hidden;
+    }
+    .page-hero-bg {
+      position: absolute; inset: 0;
+      background: 
+        radial-gradient(ellipse at 90% 30%, rgba(100,120,200,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse at 10% 70%, rgba(200,169,110,0.04) 0%, transparent 50%);
+    }
+    /* horizontal speed lines */
+    .speed-lines {
+      position: absolute;
+      top: 0; right: 0;
+      width: 50%;
+      height: 100%;
+      overflow: hidden;
+      opacity: 0.04;
+    }
+    .speed-lines::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 8px,
+        rgba(240,237,230,0.8) 8px,
+        rgba(240,237,230,0.8) 9px
+      );
+      animation: speedScroll 3s linear infinite;
+    }
+    @keyframes speedScroll { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+
+    .breadcrumb { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mid); margin-bottom: 24px; }
+    .breadcrumb a { color: var(--mid); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--accent); }
+    .breadcrumb span { color: var(--accent); margin: 0 10px; }
+    .page-title { font-family: 'Playfair Display', serif; font-size: clamp(72px, 12vw, 160px); font-weight: 900; line-height: 0.88; letter-spacing: -0.03em; position: relative; z-index: 1; }
+    .page-title em { font-style: italic; color: var(--accent); }
+    .page-title .outline { -webkit-text-stroke: 1px rgba(240,237,230,0.2); color: transparent; }
+    .page-desc { position: relative; z-index: 1; margin-top: 40px; color: var(--mid); line-height: 1.8; font-size: 13px; display: flex; gap: 80px; align-items: flex-start; max-width: 800px; }
+    .page-desc-stat .n { font-family: 'Playfair Display', serif; font-size: 40px; font-weight: 900; color: var(--accent); line-height: 1; margin-bottom: 4px; }
+    .page-desc-stat .l { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mid); }
+
+    /* FEATURED STRIP */
+    .featured-strip {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 1px;
+      background: var(--gray);
+      border-bottom: 1px solid var(--gray);
+    }
+    .fs-item {
+      background: var(--black);
+      position: relative;
+      overflow: hidden;
+      cursor: none;
+    }
+    .fs-item .ph {
+      position: relative;
+      overflow: hidden;
+    }
+    .fs-item:nth-child(1) .ph { padding-bottom: 65%; }
+    .fs-item:nth-child(2) .ph, .fs-item:nth-child(3) .ph { padding-bottom: 100%; }
+    .fs-inner {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #0d0d12 0%, #1a1a24 60%, #0a0a0f 100%);
+      transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .fs-item:hover .fs-inner { transform: scale(1.04); }
+    .fs-ph-text { font-family: 'Playfair Display', serif; font-style: italic; font-size: clamp(40px,6vw,90px); font-weight: 900; opacity: 0.05; color: var(--white); }
+    .fs-label {
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .fs-label .title { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; }
+    .fs-label .tag { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+
+    /* GRID */
+    .gallery-section { padding: 64px 48px 120px; }
+    .filter-bar { padding: 32px 48px; display: flex; gap: 8px; border-bottom: 1px solid var(--gray); }
+    .filter-btn { padding: 8px 20px; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; background: none; border: 1px solid var(--gray); color: var(--mid); cursor: none; transition: all 0.2s; font-family: 'Space Mono', monospace; }
+    .filter-btn:hover, .filter-btn.active { border-color: var(--accent); color: var(--accent); }
+
+    .cars-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .car-item {
+      position: relative;
+      overflow: hidden;
+      cursor: none;
+    }
+    .car-item .ph {
+      position: relative;
+      overflow: hidden;
+      background: #111;
+    }
+    .car-item:nth-child(3n+1) .ph { padding-bottom: 70%; }
+    .car-item:nth-child(3n+2) .ph { padding-bottom: 100%; }
+    .car-item:nth-child(3n) .ph { padding-bottom: 80%; }
+    .car-inner {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #0d0d14 0%, #1c1c2a 50%, #0a0a0f 100%);
+      transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .car-item:hover .car-inner { transform: scale(1.04); }
+    .car-ph-text { font-family: 'Playfair Display', serif; font-style: italic; font-size: clamp(32px,5vw,72px); font-weight: 900; opacity: 0.05; color: var(--white); white-space: nowrap; }
+    .car-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(8,8,8,0.9) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      display: flex;
+      align-items: flex-end;
+      padding: 20px;
+    }
+    .car-item:hover .car-overlay { opacity: 1; }
+    .car-overlay .tag { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+    .car-overlay .title { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; }
+    .car-caption { padding: 12px 0 0; display: flex; justify-content: space-between; }
+    .car-caption .name { font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 700; }
+    .car-caption .ctag { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+
+    .cta-strip { padding: 80px 48px; border-top: 1px solid var(--gray); display: flex; align-items: center; justify-content: space-between; }
+    .cta-strip-title { font-family: 'Playfair Display', serif; font-size: clamp(28px,4vw,52px); font-weight: 900; line-height: 1; letter-spacing: -0.02em; }
+    .cta-strip-title em { font-style: italic; color: var(--accent); }
+    .cta-btn { display: inline-flex; align-items: center; gap: 14px; border: 1px solid var(--accent); color: var(--accent); text-decoration: none; padding: 18px 40px; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; font-family: 'Space Mono', monospace; transition: all 0.3s; white-space: nowrap; flex-shrink: 0; }
+    .cta-btn:hover { background: var(--accent); color: var(--black); }
+    footer { padding: 40px 48px; border-top: 1px solid var(--gray); display: flex; align-items: center; justify-content: space-between; }
+    .footer-logo { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: var(--white); }
+    .footer-logo span { color: var(--accent); font-style: italic; }
+    .footer-copy { font-size: 11px; color: var(--gray); letter-spacing: 0.06em; }
+    .footer-links { display: flex; gap: 28px; list-style: none; }
+    .footer-links a { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent); }
+
+    @media (max-width: 900px) {
+      nav { padding: 20px 24px; } .nav-links { gap: 20px; }
+      .page-hero, .filter-bar, .gallery-section, .cta-strip, footer { padding-left: 24px; padding-right: 24px; }
+      .featured-strip { grid-template-columns: 1fr; }
+      .cars-grid { grid-template-columns: 1fr; }
+      .cta-strip { flex-direction: column; gap: 32px; }
+      footer { flex-direction: column; gap: 20px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Konrad <span>Jozwiak</span></a>
+    <ul class="nav-links">
+      <li><a href="realtor.html">Realtor</a></li>
+      <li><a href="cars.html" class="active">Cars</a></li>
+      <li><a href="gym.html">Gym</a></li>
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <section class="page-hero">
+    <div class="page-hero-bg"></div>
+    <div class="speed-lines"></div>
+    <div class="breadcrumb"><a href="index.html">Home</a><span>✦</span>Automotive Portfolio</div>
+    <h1 class="page-title">
+      Auto<br>
+      <em>motive</em><br>
+      <span class="outline">Content</span>
+    </h1>
+    <div class="page-desc">
+      <p>Cars deserve to be photographed like art. Detail work, lifestyle shoots, dealership content — I bring out the character in every vehicle.</p>
+      <div style="display:flex;gap:40px;flex-shrink:0;">
+        <div class="page-desc-stat"><div class="n">GTA</div><div class="l">Based</div></div>
+        <div class="page-desc-stat"><div class="n">∞</div><div class="l">Cars Shot</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED -->
+  <div class="featured-strip">
+    <div class="fs-item">
+      <div class="ph"><div class="fs-inner"><div class="fs-ph-text">Detail</div></div></div>
+      <div class="fs-label"><span class="title">Hero Exterior</span><span class="tag">Feature · Editorial</span></div>
+    </div>
+    <div class="fs-item">
+      <div class="ph"><div class="fs-inner"><div class="fs-ph-text">Interior</div></div></div>
+      <div class="fs-label"><span class="title">Cockpit</span><span class="tag">Interior</span></div>
+    </div>
+    <div class="fs-item">
+      <div class="ph"><div class="fs-inner"><div class="fs-ph-text">Motion</div></div></div>
+      <div class="fs-label"><span class="title">Rolling Shot</span><span class="tag">Motion · Lifestyle</span></div>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active">All</button>
+    <button class="filter-btn">Exterior</button>
+    <button class="filter-btn">Interior</button>
+    <button class="filter-btn">Detail</button>
+    <button class="filter-btn">Motion</button>
+    <button class="filter-btn">Dealership</button>
+  </div>
+
+  <section class="gallery-section">
+    <div class="cars-grid">
+      <div class="car-item">
+        <div class="ph"><div class="car-inner"><div class="car-ph-text">Exterior</div></div><div class="car-overlay"><div><div class="tag">Exterior</div><div class="title">BMW M4</div></div></div></div>
+        <div class="car-caption"><span class="name">BMW M4 Competition</span><span class="ctag">Exterior</span></div>
+      </div>
+      <div class="car-item">
+        <div class="ph"><div class="car-inner"><div class="car-ph-text">Interior</div></div><div class="car-overlay"><div><div class="tag">Interior</div><div class="title">Cockpit Detail</div></div></div></div>
+        <div class="car-caption"><span class="name">Porsche Interior</span><span class="ctag">Interior</span></div>
+      </div>
+      <div class="car-item">
+        <div class="ph"><div class="car-inner"><div class="car-ph-text">Detail</div></div><div class="car-overlay"><div><div class="tag">Detail</div><div class="title">Wheel Close-Up</div></div></div></div>
+        <div class="car-caption"><span class="name">AMG Wheel Detail</span><span class="ctag">Detail</span></div>
+      </div>
+      <div class="car-item">
+        <div class="ph"><div class="car-inner"><div class="car-ph-text">Rolling</div></div><div class="car-overlay"><div><div class="tag">Motion</div><div class="title">Rolling Shot</div></div></div></div>
+        <div class="car-caption"><span class="name">GT3 — Highway 400</span><span class="ctag">Motion</span></div>
+      </div>
+      <div class="car-item">
+        <div class="ph"><div class="car-inner"><div class="car-ph-text">Night</div></div><div class="car-overlay"><div><div class="tag">Night</div><div class="title">Night Shoot</div></div></div></div>
+        <div class="car-caption"><span class="name">GTR Night</span><span class="ctag">Night · Lifestyle</span></div>
+      </div>
+      <div class="car-item">
+        <div class="ph"><div class="car-inner"><div class="car-ph-text">Dealer</div></div><div class="car-overlay"><div><div class="tag">Dealership</div><div class="title">Inventory</div></div></div></div>
+        <div class="car-caption"><span class="name">Showroom Floor</span><span class="ctag">Dealership</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-strip">
+    <div class="cta-strip-title">Book your<br><em>car shoot</em></div>
+    <a href="mailto:hello@konradjozwiak.com" class="cta-btn">Get In Touch →</a>
+  </div>
+
+  <footer>
+    <div class="footer-logo">Konrad <span>Jozwiak</span></div>
+    <p class="footer-copy">© 2024 · All Rights Reserved</p>
+    <ul class="footer-links">
+      <li><a href="realtor.html">Realtor</a></li>
+      <li><a href="cars.html">Cars</a></li>
+      <li><a href="gym.html">Gym</a></li>
+    </ul>
+  </footer>
+
+  <script>
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+    (function anim(){cursor.style.left=mx+'px';cursor.style.top=my+'px';rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim);})();
+    document.querySelectorAll('a,.car-item,.fs-item,.filter-btn').forEach(el=>{
+      el.addEventListener('mouseenter',()=>{cursor.style.width='6px';cursor.style.height='6px';ring.style.width='56px';ring.style.height='56px';});
+      el.addEventListener('mouseleave',()=>{cursor.style.width='10px';cursor.style.height='10px';ring.style.width='36px';ring.style.height='36px';});
+    });
+    document.querySelectorAll('.filter-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>{document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');});
+    });
+  </script>
+</body>
+</html>

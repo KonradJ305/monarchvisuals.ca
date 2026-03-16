@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Realtor Portfolio — Konrad Jozwiak</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #080808;
+      --white: #f0ede6;
+      --accent: #c8a96e;
+      --gray: #3a3a3a;
+      --mid: #999;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--black); color: var(--white); font-family: 'Space Mono', monospace; font-size: 14px; cursor: none; overflow-x: hidden; }
+
+    .cursor { position: fixed; width: 10px; height: 10px; background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); mix-blend-mode: difference; }
+    .cursor-ring { position: fixed; width: 36px; height: 36px; border: 1px solid var(--accent); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%, -50%); opacity: 0.6; }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 28px 48px; }
+    nav::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(8,8,8,0.95) 0%, transparent 100%); pointer-events: none; }
+    .nav-logo { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--white); text-decoration: none; position: relative; z-index: 1; }
+    .nav-logo span { color: var(--accent); font-style: italic; }
+    .nav-links { display: flex; gap: 40px; list-style: none; position: relative; z-index: 1; }
+    .nav-links a { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mid); text-decoration: none; transition: color 0.2s ease; position: relative; }
+    .nav-links a.active { color: var(--accent); }
+    .nav-links a::after { content: ''; position: absolute; bottom: -3px; left: 0; width: 0; height: 1px; background: var(--accent); transition: width 0.3s ease; }
+    .nav-links a:hover { color: var(--white); }
+    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+
+    /* PAGE HERO */
+    .page-hero {
+      padding: 200px 48px 100px;
+      position: relative;
+      border-bottom: 1px solid var(--gray);
+    }
+    .page-hero-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 80% 50%, rgba(200,169,110,0.07) 0%, transparent 60%);
+    }
+    .breadcrumb { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mid); margin-bottom: 24px; }
+    .breadcrumb a { color: var(--mid); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--accent); }
+    .breadcrumb span { color: var(--accent); margin: 0 10px; }
+    .page-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(72px, 12vw, 160px);
+      font-weight: 900;
+      line-height: 0.88;
+      letter-spacing: -0.03em;
+      position: relative;
+      z-index: 1;
+    }
+    .page-title em { font-style: italic; color: var(--accent); }
+    .page-title .outline { -webkit-text-stroke: 1px rgba(240,237,230,0.2); color: transparent; }
+    .page-desc {
+      position: relative;
+      z-index: 1;
+      margin-top: 40px;
+      max-width: 520px;
+      color: var(--mid);
+      line-height: 1.8;
+      font-size: 13px;
+      display: flex;
+      gap: 80px;
+      align-items: flex-start;
+    }
+    .page-desc-stat { }
+    .page-desc-stat .n { font-family: 'Playfair Display', serif; font-size: 40px; font-weight: 900; color: var(--accent); line-height: 1; margin-bottom: 4px; }
+    .page-desc-stat .l { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mid); }
+
+    /* FILTER BAR */
+    .filter-bar {
+      padding: 32px 48px;
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--gray);
+    }
+    .filter-btn {
+      padding: 8px 20px;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      background: none;
+      border: 1px solid var(--gray);
+      color: var(--mid);
+      cursor: none;
+      transition: all 0.2s ease;
+      font-family: 'Space Mono', monospace;
+    }
+    .filter-btn:hover, .filter-btn.active { border-color: var(--accent); color: var(--accent); }
+
+    /* MASONRY GRID */
+    .gallery-section { padding: 64px 48px 120px; }
+    .masonry {
+      columns: 3;
+      column-gap: 16px;
+    }
+    .gallery-item {
+      break-inside: avoid;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+      cursor: none;
+    }
+    .gallery-item .img-box {
+      width: 100%;
+      background: #1a1a1a;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
+    }
+    .gallery-item:hover .img-box { transform: scale(1.02); }
+    .gallery-item .ph {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .gallery-item .ph-inner {
+      width: 100%;
+      background: linear-gradient(135deg, #1c1812 0%, #2d2318 60%, #161210 100%);
+      position: relative;
+    }
+    .gallery-item .ph-label {
+      position: absolute;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: clamp(40px, 6vw, 80px);
+      font-weight: 900;
+      opacity: 0.05;
+      color: var(--white);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      white-space: nowrap;
+    }
+    /* varied heights for masonry feel */
+    .gallery-item:nth-child(1) .ph-inner { padding-bottom: 130%; }
+    .gallery-item:nth-child(2) .ph-inner { padding-bottom: 75%; }
+    .gallery-item:nth-child(3) .ph-inner { padding-bottom: 100%; }
+    .gallery-item:nth-child(4) .ph-inner { padding-bottom: 80%; }
+    .gallery-item:nth-child(5) .ph-inner { padding-bottom: 120%; }
+    .gallery-item:nth-child(6) .ph-inner { padding-bottom: 70%; }
+    .gallery-item:nth-child(7) .ph-inner { padding-bottom: 90%; }
+    .gallery-item:nth-child(8) .ph-inner { padding-bottom: 110%; }
+    .gallery-item:nth-child(9) .ph-inner { padding-bottom: 75%; }
+
+    .gallery-item .caption {
+      padding: 12px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .gallery-item .cap-title { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; }
+    .gallery-item .cap-tag { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+
+    /* CTA strip */
+    .cta-strip {
+      padding: 80px 48px;
+      border-top: 1px solid var(--gray);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .cta-strip-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 4vw, 52px);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .cta-strip-title em { font-style: italic; color: var(--accent); }
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      text-decoration: none;
+      padding: 18px 40px;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-family: 'Space Mono', monospace;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .cta-btn:hover { background: var(--accent); color: var(--black); }
+
+    footer { padding: 40px 48px; border-top: 1px solid var(--gray); display: flex; align-items: center; justify-content: space-between; }
+    .footer-logo { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: var(--white); }
+    .footer-logo span { color: var(--accent); font-style: italic; }
+    .footer-copy { font-size: 11px; color: var(--gray); letter-spacing: 0.06em; }
+    .footer-links { display: flex; gap: 28px; list-style: none; }
+    .footer-links a { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent); }
+
+    @media (max-width: 900px) {
+      nav { padding: 20px 24px; } .nav-links { gap: 20px; }
+      .page-hero, .filter-bar, .gallery-section, .cta-strip, footer { padding-left: 24px; padding-right: 24px; }
+      .masonry { columns: 1; }
+      .cta-strip { flex-direction: column; gap: 32px; }
+      footer { flex-direction: column; gap: 20px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Konrad <span>Jozwiak</span></a>
+    <ul class="nav-links">
+      <li><a href="realtor.html" class="active">Realtor</a></li>
+      <li><a href="cars.html">Cars</a></li>
+      <li><a href="gym.html">Gym</a></li>
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <section class="page-hero">
+    <div class="page-hero-bg"></div>
+    <div class="breadcrumb"><a href="index.html">Home</a><span>✦</span>Realtor Portfolio</div>
+    <h1 class="page-title">
+      Real<br>
+      <em>Estate</em><br>
+      <span class="outline">Visuals</span>
+    </h1>
+    <div class="page-desc">
+      <p>Properties that look extraordinary sell faster. I work with agents and developers across the GTA to produce imagery that drives listings.</p>
+      <div style="display:flex;gap:40px;flex-shrink:0;">
+        <div class="page-desc-stat"><div class="n">GTA</div><div class="l">Service Area</div></div>
+        <div class="page-desc-stat"><div class="n">∞</div><div class="l">Listings Shot</div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="filter-bar">
+    <button class="filter-btn active">All</button>
+    <button class="filter-btn">Interior</button>
+    <button class="filter-btn">Exterior</button>
+    <button class="filter-btn">Twilight</button>
+    <button class="filter-btn">Aerial</button>
+    <button class="filter-btn">Luxury</button>
+  </div>
+
+  <section class="gallery-section">
+    <div class="masonry">
+      <div class="gallery-item">
+        <div class="img-box"><div class="ph"><div class="ph-inner"><div class="ph-label">Living Room</div></div></div></div>
+        <div class="caption"><span class="cap-title">Mississauga Condo</span><span class="cap-tag">Interior</span></div>
+      </div>
+      <div class="gallery-item">
+        <div class="img-box"><div class="ph"><div class="ph-inner"><div class="ph-label">Exterior</div></div></div></div>
+        <div class="caption"><span class="cap-title">Oakville Detached</span><span class="cap-tag">Exterior · Twilight</span></div>
+      </div>
+      <div class="gallery-item">
+        <div class="img-box"><div class="ph"><div class="ph-inner"><div class="ph-label">Kitchen</div></div></div></div>
+        <div class="caption"><span class="cap-title">Etobicoke Kitchen</span><span class="cap-tag">Interior</span></div>
+      </div>
+      <div class="gallery-item">
+        <div class="img-box"><div class="ph"><div class="ph-inner"><div class="ph-label">Luxury</div></div></div></div>
+        <div class="caption"><span class="cap-title">Toronto Penthouse</span><span class="cap-tag">Luxury · Interior</span></div>
+      </div>
+      <div class="gallery-item">
+        <div class="img-box"><div class="ph"><div class="ph-inner"><div class="ph-label">Aerial</div></div></div></div>
+        <div class="caption"><span class="cap-title">Brampton Estate</span><span class="cap-tag">Aerial · Exterior</span></div>
+      </div>
+      <div class="gallery-item">
+        <div class="img-box"><div class="ph"><div class="ph-inner"><div class="ph-label">Master</div></div></div></div>
+        <div class="caption"><span class="cap-title">North York Suite</span><span class="cap-tag">Interior</span></div>
+      </div>
+      <div class="gallery-item">
+        <div class="img-box"><div class="ph"><div class="ph-inner"><div class="ph-label">Backyard</div></div></div></div>
+        <div class="caption"><span class="cap-title">Vaughan Home</span><span class="cap-tag">Exterior · Pool</span></div>
+      </div>
+      <div class="gallery-item">
+        <div class="img-box"><div class="ph"><div class="ph-inner"><div class="ph-label">Condo</div></div></div></div>
+        <div class="caption"><span class="cap-title">Downtown Toronto</span><span class="cap-tag">Interior · Twilight</span></div>
+      </div>
+      <div class="gallery-item">
+        <div class="img-box"><div class="ph"><div class="ph-inner"><div class="ph-label">Dining</div></div></div></div>
+        <div class="caption"><span class="cap-title">Scarborough Listing</span><span class="cap-tag">Interior</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-strip">
+    <div class="cta-strip-title">Book your next<br><em>listing shoot</em></div>
+    <a href="mailto:hello@konradjozwiak.com" class="cta-btn">Get In Touch →</a>
+  </div>
+
+  <footer>
+    <div class="footer-logo">Konrad <span>Jozwiak</span></div>
+    <p class="footer-copy">© 2024 · All Rights Reserved</p>
+    <ul class="footer-links">
+      <li><a href="realtor.html">Realtor</a></li>
+      <li><a href="cars.html">Cars</a></li>
+      <li><a href="gym.html">Gym</a></li>
+    </ul>
+  </footer>
+
+  <script>
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+    (function anim(){cursor.style.left=mx+'px';cursor.style.top=my+'px';rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim);})();
+    document.querySelectorAll('a,.gallery-item,.filter-btn').forEach(el=>{
+      el.addEventListener('mouseenter',()=>{cursor.style.width='6px';cursor.style.height='6px';ring.style.width='56px';ring.style.height='56px';});
+      el.addEventListener('mouseleave',()=>{cursor.style.width='10px';cursor.style.height='10px';ring.style.width='36px';ring.style.height='36px';});
+    });
+    document.querySelectorAll('.filter-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>{document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');});
+    });
+  </script>
+</body>
+</html>
